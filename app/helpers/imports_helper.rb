@@ -22,7 +22,8 @@ module ImportsHelper
       ticker: "Ticker",
       exchange: "Exchange",
       price: "Price",
-      entity_type: "Type"
+      entity_type: "Type",
+      opening_date: "Opening Date"
     }[key]
   end
 
