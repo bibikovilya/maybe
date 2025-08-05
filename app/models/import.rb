@@ -221,7 +221,7 @@ class Import < ApplicationRecord
         "qty_col_label", "ticker_col_label", "price_col_label",
         "entity_type_col_label", "notes_col_label", "currency_col_label",
         "date_format", "signage_convention", "number_format",
-        "exchange_operating_mic_col_label"
+        "exchange_operating_mic_col_label", "opening_date_col_label"
       )
     )
   end
