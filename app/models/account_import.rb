@@ -18,7 +18,10 @@ class AccountImport < Import
         account.save!
 
         manager = Account::OpeningBalanceManager.new(account)
-        result = manager.set_opening_balance(balance: row.amount.to_d)
+        result = manager.set_opening_balance(
+          balance: row.amount.to_d,
+          date: row.opening_date&.to_date
+        )
 
         # Re-raise since we should never have an error here
         if result.error
@@ -37,7 +40,7 @@ class AccountImport < Import
   end
 
   def column_keys
-    %i[entity_type name amount currency]
+    %i[entity_type name amount currency opening_date]
   end
 
   def dry_run
@@ -48,10 +51,10 @@ class AccountImport < Import
 
   def csv_template
     template = <<-CSV
-      Account type*,Name*,Balance*,Currency
-      Checking,Main Checking Account,1000.00,USD
-      Savings,Emergency Fund,5000.00,USD
-      Credit Card,Rewards Card,-500.00,USD
+      Account type*,Name*,Balance*,Currency,Opening date
+      Checking,Main Checking Account,1000.00,USD,2024-01-01
+      Savings,Emergency Fund,5000.00,USD,2024-01-01
+      Credit Card,Rewards Card,-500.00,USD,2024-01-01
     CSV
 
     CSV.parse(template, headers: true)
