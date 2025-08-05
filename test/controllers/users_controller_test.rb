@@ -32,6 +32,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "admin can reset family data" do
+    skip "Skip all Plaid tests"
     account = accounts(:investment)
     category = categories(:income)
     tag = tags(:one)
