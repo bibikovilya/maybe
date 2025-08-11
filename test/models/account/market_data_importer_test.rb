@@ -16,10 +16,15 @@ class Account::MarketDataImporterTest < ActiveSupport::TestCase
     Entry.delete_all
 
     @provider = mock("provider")
+    @security_provider = mock("security_provider")
+    Provider::Registry.any_instance
+                      .stubs(:get_provider)
+                      .with(:nbrb)
+                      .returns(@provider)
     Provider::Registry.any_instance
                       .stubs(:get_provider)
                       .with(:synth)
-                      .returns(@provider)
+                      .returns(@security_provider)
   end
 
   test "syncs required exchange rates for a foreign-currency account" do
@@ -81,7 +86,7 @@ class Account::MarketDataImporterTest < ActiveSupport::TestCase
     expected_start_date = trade_date - PROVIDER_BUFFER
     end_date            = Date.current.in_time_zone("America/New_York").to_date
 
-    @provider.expects(:fetch_security_prices)
+    @security_provider.expects(:fetch_security_prices)
              .with(symbol: security.ticker,
                    exchange_operating_mic: security.exchange_operating_mic,
                    start_date: expected_start_date,
@@ -93,7 +98,7 @@ class Account::MarketDataImporterTest < ActiveSupport::TestCase
                               currency: "USD")
              ]))
 
-    @provider.stubs(:fetch_security_info)
+    @security_provider.stubs(:fetch_security_info)
              .with(symbol: security.ticker, exchange_operating_mic: security.exchange_operating_mic)
              .returns(provider_success_response(OpenStruct.new(name: "Apple", logo_url: "logo")))
 

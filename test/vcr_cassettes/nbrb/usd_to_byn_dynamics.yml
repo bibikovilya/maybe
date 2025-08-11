@@ -1,0 +1,72 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.nbrb.by/exrates/rates/USD?parammode=2&periodicity=0
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.2
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - '"H5oIiP5Lr305Lp3gIWfwuB520q0"'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Date:
+      - Mon, 11 Aug 2025 19:20:09 GMT
+      Content-Length:
+      - '141'
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJDdXJfSUQiOjQzMSwiRGF0ZSI6IjIwMjUtMDgtMTFUMDA6MDA6MDAiLCJDdXJfQWJicmV2aWF0aW9uIjoiVVNEIiwiQ3VyX1NjYWxlIjoxLCJDdXJfTmFtZSI6ItCU0L7Qu9C70LDRgCDQodCo0JAiLCJDdXJfT2ZmaWNpYWxSYXRlIjoyLjk4NzZ9
+  recorded_at: Mon, 11 Aug 2025 19:19:57 GMT
+- request:
+    method: get
+    uri: https://api.nbrb.by/exrates/rates/dynamics/431?enddate=2024-01-15&startdate=2024-01-10
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.13.2
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - '"Y02ZeuKYDKbAAs8OrBEOAyPNXzo"'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Date:
+      - Mon, 11 Aug 2025 19:20:09 GMT
+      Content-Length:
+      - '421'
+    body:
+      encoding: UTF-8
+      string: '[{"Cur_ID":431,"Date":"2024-01-10T00:00:00","Cur_OfficialRate":3.1949},{"Cur_ID":431,"Date":"2024-01-11T00:00:00","Cur_OfficialRate":3.1760},{"Cur_ID":431,"Date":"2024-01-12T00:00:00","Cur_OfficialRate":3.1636},{"Cur_ID":431,"Date":"2024-01-13T00:00:00","Cur_OfficialRate":3.1636},{"Cur_ID":431,"Date":"2024-01-14T00:00:00","Cur_OfficialRate":3.1636},{"Cur_ID":431,"Date":"2024-01-15T00:00:00","Cur_OfficialRate":3.1537}]'
+  recorded_at: Mon, 11 Aug 2025 19:19:58 GMT
+recorded_with: VCR 6.3.1
