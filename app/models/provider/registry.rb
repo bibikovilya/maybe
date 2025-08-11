@@ -40,6 +40,10 @@ class Provider::Registry
         Provider::Synth.new(api_key)
       end
 
+      def nbrb
+        Provider::Nbrb.new
+      end
+
       def plaid_us
         config = Rails.application.config.plaid
 
@@ -92,7 +96,7 @@ class Provider::Registry
     def available_providers
       case concept
       when :exchange_rates
-        %i[synth]
+        %i[nbrb]
       when :securities
         %i[synth]
       when :llm
