@@ -1,0 +1,48 @@
+<%# locals: (import:) %>
+
+<%= styled_form_with model: @import,
+                     url: import_configuration_path(@import),
+                     scope: :import,
+                     method: :patch,
+                     class: "space-y-4" do |form| %>
+
+  <div class="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
+    <div class="flex items-start gap-3">
+      <div class="flex-shrink-0">
+        <span class="text-blue-500">
+          <%= lucide_icon "info", class: "w-5 h-5" %>
+        </span>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-sm font-medium text-blue-700 theme-dark:text-blue-100">
+          <%= t(".title") %>
+        </h3>
+        <p class="text-sm text-blue-700 theme-dark:text-blue-200">
+          <%= t(".description") %>
+        </p>
+        <ul class="text-sm text-blue-600 theme-dark:text-blue-300 space-y-1 mt-2">
+          <% t(".features").each do |feature| %>
+            <li>• <%= feature %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <%# Account Assignment (only if no specific account selected) %>
+  <% unless import.account.present? %>
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-primary"><%= t(".account_assignment_label") %></label>
+      <p class="text-sm text-secondary">
+        <%= t(".account_assignment_description") %>
+      </p>
+      <div class="ml-4 space-y-1 text-sm text-secondary">
+        <% t(".account_assignment_options").each do |option| %>
+          <p>• <%= option %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= form.submit t(".submit_button"), disabled: import.complete?, class: "w-full" %>
+<% end %>

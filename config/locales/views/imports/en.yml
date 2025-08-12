@@ -19,6 +19,21 @@ en:
         date_format_label: Date format
       transaction_import:
         date_format_label: Date format
+      transaction_prior_import:
+        title: Prior Bank Statement Import
+        description: This import automatically parses Belarusian Prior Bank CSV statements. No column mapping is required - the system will automatically extract all transaction data from your bank statement.
+        features:
+          - Supports multiple accounts/cards in one statement
+          - Automatically detects dates
+          - Handles amounts with comma decimal separators
+          - Extracts merchant names and transaction categories # check if this is needed
+          - Creates account entries like "****5333" for each card # check if this is needed
+        account_assignment_label: Account Assignment
+        account_assignment_description: "Since multiple accounts may be found in your bank statement, you can either:"
+        account_assignment_options:
+          - Let the system create separate accounts for each card/contract found # check if this is needed
+          - Assign all transactions to an existing account (overrides automatic detection) # check if this is needed
+        submit_button: Process Prior Statement
     confirms:
       mappings:
         create_account: Create account
@@ -79,6 +94,7 @@ en:
       import_accounts: Import accounts
       import_mint: Import from Mint
       import_portfolio: Import investments
+      import_transactions_prior: Import transactions from Prior Bank
       import_transactions: Import transactions
       resume: Resume %{type}
       sources: Sources

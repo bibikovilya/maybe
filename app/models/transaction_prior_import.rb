@@ -93,6 +93,19 @@ class TransactionPriorImport < Import
     "%d.%m.%Y"
   end
 
+  # Override CSV methods since we don't use traditional CSV parsing
+  def csv_headers
+    [ "Дата транзакции", "Операция", "Сумма", "Валюта", "Дата операции по счету", "Комиссия/Money-back", "Обороты по счету", "Цифровая карта", "Категория операции" ]
+  end
+
+  def csv_sample
+    headers = csv_headers
+    [
+      [ "01.01.2024 14:44:55", "Retail BLR Minsk Gipermarket Gippo", "-1.99", "BYN", "01.02.2024", "0,00", "-1,99", "", "Магазины продуктовые" ],
+      [ "31.01.2024 14:10:59", "Retail BLR MINSK MOBILE BANK", "-60.19", "BYN", "31.01.2024", "0,00", "-60,19", "", "Денежные переводы" ]
+    ].map { |row| headers.zip(row).to_h }
+  end
+
   private
 
     def set_defaults
