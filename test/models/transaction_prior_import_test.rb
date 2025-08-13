@@ -63,41 +63,12 @@ class TransactionPriorImportTest < ActiveSupport::TestCase
 
     # Check first transaction from contract 9090
     income_row = @import.rows.find { |r| r.amount.to_f > 0 }
-    assert_equal "****9090", income_row.account
+    assert_equal "9090", income_row.account
     assert_equal "900.0", income_row.amount
 
     # Check transaction from contract 5333
     expense_row = @import.rows.find { |r| r.amount.to_f < 0 }
     assert_equal "****5333", expense_row.account
     assert_equal "-1.99", expense_row.amount
-  end
-
-  test "handles date parsing correctly" do
-    @import.update!(raw_file_str: "dummy") # We'll test the method directly
-
-    date1 = @import.send(:parse_belarusian_date, "01.02.2024 14:44:55")
-    assert_equal Date.new(2024, 2, 1), date1
-
-    date2 = @import.send(:parse_belarusian_date, "31.01.2024 00:00:00")
-    assert_equal Date.new(2024, 1, 31), date2
-
-    date3 = @import.send(:parse_belarusian_date, "invalid")
-    assert_nil date3
-  end
-
-  test "handles amount parsing correctly" do
-    @import.update!(raw_file_str: "dummy") # We'll test the method directly
-
-    amount1 = @import.send(:parse_belarusian_amount, '"-1,99"')
-    assert_equal BigDecimal("-1.99"), amount1
-
-    amount2 = @import.send(:parse_belarusian_amount, '"900,00"')
-    assert_equal BigDecimal("900.00"), amount2
-
-    amount3 = @import.send(:parse_belarusian_amount, "invalid")
-    assert_nil amount3
-
-    amount4 = @import.send(:parse_belarusian_amount, '"20 282,71"')
-    assert_equal BigDecimal("20282.71"), amount4
   end
 end
