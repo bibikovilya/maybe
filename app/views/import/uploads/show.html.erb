@@ -61,7 +61,8 @@
                        rows: 10,
                        required: true,
                        placeholder: "Paste your CSV file contents here",
-                       "data-auto-submit-form-target": "auto" %>
+                       "data-auto-submit-form-target": "auto",
+                       class: "overflow-y-auto border-0" %>
 
           <%= form.submit "Upload CSV", disabled: @import.complete? %>
         <% end %>
