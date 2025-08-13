@@ -1,5 +1,14 @@
-class TransactionPriorImport < Import
+class TransactionPriorImport < TransactionImport
   after_initialize :set_defaults
+  after_update :set_default_column_mappings, if: :saved_change_to_raw_file_str?
+
+  DEFAULT_COLUMN_MAPPINGS = {
+    date_col_label: "Дата транзакции",
+    amount_col_label: "Сумма",
+    name_col_label: "Операция",
+    currency_col_label: "Валюта",
+    category_col_label: "Категория операции"
+  }.freeze
 
   def import!
     transaction do
@@ -34,22 +43,6 @@ class TransactionPriorImport < Import
     end
   end
 
-  def required_column_keys
-    %i[date amount]
-  end
-
-  def column_keys
-    base = %i[date amount name currency category tags notes]
-    base.unshift(:account) if account.nil?
-    base
-  end
-
-  def mapping_steps
-    base = [ Import::CategoryMapping, Import::TagMapping ]
-    base << Import::AccountMapping if account.nil?
-    base
-  end
-
   def csv_template
     template = <<-CSV
       Операции по ........9090
@@ -69,10 +62,6 @@ class TransactionPriorImport < Import
     CSV.parse(template, headers: true)
   end
 
-  def date_format
-    "%d.%m.%Y"
-  end
-
   def csv_sample
     @csv_sample ||= parsed_csv.first(2) + parsed_csv[parsed_csv.length - 2..-1]
   end
@@ -82,7 +71,21 @@ class TransactionPriorImport < Import
     def set_defaults
       self.amount_type_strategy ||= "signed_amount"
       self.signage_convention ||= "inflows_negative"
-      self.number_format ||= "1.234,56"  # European format for BYN
+      self.number_format ||= "1.234,56"
+      self.date_format ||= "%d.%m.%Y %H:%M:%S"
+    end
+
+    def set_default_column_mappings
+      return unless csv_headers.present?
+
+      transaction do
+        DEFAULT_COLUMN_MAPPINGS.each do |column_attr, header_name|
+          if csv_headers.include?(header_name) && public_send(column_attr).blank?
+            assign_attributes(column_attr => header_name)
+          end
+        end
+        save!
+      end
     end
 
     def parsed_csv
