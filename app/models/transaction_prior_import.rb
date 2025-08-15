@@ -2,13 +2,20 @@ class TransactionPriorImport < TransactionImport
   after_initialize :set_defaults
   after_update :set_default_column_mappings, if: :saved_change_to_raw_file_str?
 
+  NOTES_HEADER = "Notes".freeze
   DEFAULT_COLUMN_MAPPINGS = {
     date_col_label: "Дата транзакции",
     amount_col_label: "Сумма",
     name_col_label: "Операция",
     currency_col_label: "Валюта",
-    category_col_label: "Категория операции"
+    category_col_label: "Категория операции",
+    notes_col_label: NOTES_HEADER
   }.freeze
+  FILE_LINES = {
+    transaction_start: "Операции по ",
+    headers: "Дата транзакции,Операция,Сумма,Валюта",
+    transaction_end: "Всего по контракту"
+  }
 
   def csv_template
     template = <<-CSV
@@ -58,6 +65,7 @@ class TransactionPriorImport < TransactionImport
     def parsed_csv
       @parsed_csv ||= begin
         transaction_lines = extract_transaction_lines_as_csv
+        transaction_lines = add_notes(transaction_lines)
         self.class.parse_csv_str(transaction_lines.join("\n"), col_sep: ",")
       end
     end
@@ -69,12 +77,12 @@ class TransactionPriorImport < TransactionImport
       header_found = false
 
       lines.each do |line|
-        if line.match(/^Операции по /)
+        if line.start_with?(FILE_LINES[:transaction_start])
           in_transaction_section = true
-        elsif line.match(/^Дата транзакции,Операция,Сумма/)
+        elsif line.start_with?(FILE_LINES[:headers])
           csv_lines << line unless header_found
           header_found = true
-        elsif in_transaction_section && line.match(/^Всего по контракту/)
+        elsif in_transaction_section && line.match(/^#{FILE_LINES[:transaction_end]}/)
           in_transaction_section = false
         elsif in_transaction_section && line.strip.present? && line.include?(",")
           csv_lines << line
@@ -82,5 +90,17 @@ class TransactionPriorImport < TransactionImport
       end
 
       csv_lines
+    end
+
+    def add_notes(transaction_lines)
+      transaction_lines.each do |line|
+        line.chomp!("\r")
+        if line.start_with?(FILE_LINES[:headers])
+          line << NOTES_HEADER
+        else
+          line << "\"#{line.gsub("\"", "")}\""
+        end
+        line << "\r"
+      end
     end
 end
