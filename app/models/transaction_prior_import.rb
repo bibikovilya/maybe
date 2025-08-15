@@ -10,39 +10,6 @@ class TransactionPriorImport < TransactionImport
     category_col_label: "Категория операции"
   }.freeze
 
-  def import!
-    transaction do
-      mappings.each(&:create_mappable!)
-
-      transactions = parsed_transactions.map do |transaction_data|
-        mapped_account = if account
-          account
-        else
-          mappings.accounts.mappable_for(transaction_data[:account])
-        end
-
-        category = mappings.categories.mappable_for(transaction_data[:category])
-        tags = transaction_data[:tags].map { |tag| mappings.tags.mappable_for(tag) }.compact
-
-        Transaction.new(
-          category: category,
-          tags: tags,
-          entry: Entry.new(
-            account: mapped_account,
-            date: transaction_data[:date],
-            amount: transaction_data[:amount],
-            name: transaction_data[:name],
-            currency: transaction_data[:currency],
-            notes: transaction_data[:notes],
-            import: self
-          )
-        )
-      end
-
-      Transaction.import!(transactions, recursive: true)
-    end
-  end
-
   def csv_template
     template = <<-CSV
       Операции по ........9090
