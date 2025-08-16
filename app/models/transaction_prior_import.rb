@@ -36,7 +36,15 @@ class TransactionPriorImport < TransactionImport
   end
 
   def csv_sample
-    @csv_sample ||= parsed_csv.first(2) + parsed_csv[parsed_csv.length - 2..-1]
+    @csv_sample ||= begin
+      return [] if parsed_csv.empty?
+
+      if parsed_csv.length <= 4
+        parsed_csv
+      else
+        parsed_csv.first(2) + parsed_csv[parsed_csv.length - 2..-1]
+      end
+    end
   end
 
   private
@@ -64,8 +72,32 @@ class TransactionPriorImport < TransactionImport
     def parsed_csv
       @parsed_csv ||= begin
         transaction_lines = extract_transaction_lines_as_csv
+        transaction_lines = filter_duplicate_transactions(transaction_lines)
         transaction_lines = add_notes(transaction_lines)
         self.class.parse_csv_str(transaction_lines.join("\n"), col_sep: ",")
+      end
+    end
+
+    def filter_duplicate_transactions(transaction_lines)
+      transaction_lines.reject do |line|
+        existing_transactions.include?(line.gsub("\"", "").strip)
+      end
+    end
+
+    def existing_transactions
+      @existing_transactions ||= begin
+        target_accounts = if account
+          [ account ]
+        else
+          family.accounts
+        end
+
+        existing_entries = Entry.joins(:import)
+                                .where(account: target_accounts, imports: { type: "TransactionPriorImport" })
+                                .where.not(imports: { id: self.id })
+                                .pluck(:notes)
+
+        existing_entries.compact.to_set
       end
     end
 
