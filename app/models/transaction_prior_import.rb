@@ -8,7 +8,6 @@ class TransactionPriorImport < TransactionImport
     amount_col_label: "Сумма",
     name_col_label: "Операция",
     currency_col_label: "Валюта",
-    category_col_label: "Категория операции",
     notes_col_label: NOTES_HEADER
   }.freeze
   FILE_LINES = {
