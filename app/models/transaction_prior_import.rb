@@ -5,7 +5,7 @@ class TransactionPriorImport < TransactionImport
   NOTES_HEADER = "Notes".freeze
   DEFAULT_COLUMN_MAPPINGS = {
     date_col_label: "Дата транзакции",
-    amount_col_label: "Сумма",
+    amount_col_label: "Обороты по счету",
     name_col_label: "Операция",
     currency_col_label: "Валюта",
     notes_col_label: NOTES_HEADER
