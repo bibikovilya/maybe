@@ -15,6 +15,58 @@ class TransactionPriorImport < TransactionImport
     headers: "Дата транзакции,Операция,Сумма,Валюта",
     transaction_end: "Всего по контракту"
   }
+  WITHDRAW_PATTERN = "Снятие наличных".freeze
+
+  # Override the parent import! method to handle ATM transfers
+  def import!
+    transaction do
+      mappings.each(&:create_mappable!)
+
+      transactions = []
+      transfers = []
+
+      rows.each do |row|
+        mapped_account = if account
+          account
+        else
+          mappings.accounts.mappable_for(row.account)
+        end
+
+        category = mappings.categories.mappable_for(row.category)
+        tags = row.tags_list.map { |tag| mappings.tags.mappable_for(tag) }.compact
+
+        if atm_withdrawal?(row)
+          transfers << create_atm_transfer(
+            from_account: mapped_account,
+            to_account: find_or_create_cash_account(row.currency),
+            date: row.date_iso,
+            amount: row.signed_amount.abs,
+            name: row.name,
+            currency: row.currency,
+            notes: row.notes,
+            import: self
+          )
+        else
+          transactions << Transaction.new(
+            category: category,
+            tags: tags,
+            entry: Entry.new(
+              account: mapped_account,
+              date: row.date_iso,
+              amount: row.signed_amount,
+              name: row.name,
+              currency: row.currency,
+              notes: row.notes,
+              import: self
+            )
+          )
+        end
+      end
+
+      Transaction.import!(transactions, recursive: true) if transactions.any?
+      Transfer.import!(transfers, recursive: true) if transfers.any?
+    end
+  end
 
   def csv_template
     template = <<-CSV
@@ -133,5 +185,53 @@ class TransactionPriorImport < TransactionImport
         end
         line << "\r"
       end
+    end
+
+    def atm_withdrawal?(row)
+      row.notes.match?(WITHDRAW_PATTERN)
+    end
+
+    def find_or_create_cash_account(currency)
+      account_name = "Cash #{currency.upcase}"
+
+      family.accounts.find_or_create_by!(name: account_name) do |new_account|
+        new_account.balance = 0
+        new_account.cash_balance = 0
+        new_account.currency = currency
+        new_account.accountable = Depository.new
+        new_account.classification = "asset"
+        new_account.import = self
+      end
+    end
+
+    def create_atm_transfer(from_account:, to_account:, amount:, date:, currency:, name:, notes:, import:)
+      outflow_transaction = Transaction.create!(
+        kind: "funds_movement",
+        entry: Entry.new(
+          account: from_account,
+          date:,
+          amount:,
+          currency:,
+          name:,
+          notes:,
+          import:
+        )
+      )
+      inflow_transaction = Transaction.create!(
+        kind: "funds_movement",
+        entry: Entry.new(
+          account: to_account,
+          date:,
+          amount: -amount,
+          currency:,
+          name: "Cash from #{from_account.name}",
+          import:
+        )
+      )
+      Transfer.new(
+        outflow_transaction:,
+        inflow_transaction:,
+        status: "confirmed"
+      )
     end
 end
