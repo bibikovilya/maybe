@@ -42,7 +42,7 @@ class TransactionPriorImport < TransactionImport
             date: row.date_iso,
             amount: row.signed_amount.abs,
             name: row.name,
-            currency: row.currency,
+            currency: mapped_account.currency,
             notes: row.notes,
             import: self
           )
@@ -55,7 +55,7 @@ class TransactionPriorImport < TransactionImport
               date: row.date_iso,
               amount: row.signed_amount,
               name: row.name,
-              currency: row.currency,
+              currency: mapped_account.currency,
               notes: row.notes,
               import: self
             )
