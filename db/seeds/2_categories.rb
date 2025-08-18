@@ -38,20 +38,20 @@ EXPENSE_CATEGORIES = [
     parent: "Housing & Utilities"
   },
   {
-    name: "Home: Home Maintenance",
+    name: "Home: Maintenance",
     lucide_icon: "wrench",
     classification: "expense",
     parent: "Housing & Utilities"
   },
   {
-    name: "Home: Home Upgrades",
-    lucide_icon: "hammer",
+    name: "Home: Communal services",
+    lucide_icon: "building-2",
     classification: "expense",
     parent: "Housing & Utilities"
   },
   {
-    name: "Home: Housing and Communal services",
-    lucide_icon: "building-2",
+    name: "Home: HOA",
+    lucide_icon: "fence",
     classification: "expense",
     parent: "Housing & Utilities"
   },
