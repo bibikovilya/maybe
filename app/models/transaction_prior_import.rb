@@ -10,12 +10,13 @@ class TransactionPriorImport < TransactionImport
     currency_col_label: "Валюта",
     notes_col_label: NOTES_HEADER
   }.freeze
+  FEE_COL_LABEL = "Комиссия/Money-back".freeze
+  WITHDRAW_PATTERN = "Снятие наличных".freeze
   FILE_LINES = {
     transaction_start: "Операции по ",
     headers: "Дата транзакции,Операция,Сумма,Валюта",
     transaction_end: "Всего по контракту"
   }
-  WITHDRAW_PATTERN = "Снятие наличных".freeze
 
   # Override the parent import! method to handle ATM transfers
   def import!
@@ -97,6 +98,32 @@ class TransactionPriorImport < TransactionImport
         parsed_csv.first(2) + parsed_csv[parsed_csv.length - 2..-1]
       end
     end
+  end
+
+  # Override the amount to consider money-back fees
+  def generate_rows_from_csv
+    rows.destroy_all
+
+    mapped_rows = csv_rows.map do |row|
+      {
+        account: row[account_col_label].to_s,
+        date: row[date_col_label].to_s,
+        qty: sanitize_number(row[qty_col_label]).to_s,
+        ticker: row[ticker_col_label].to_s,
+        exchange_operating_mic: row[exchange_operating_mic_col_label].to_s,
+        price: sanitize_number(row[price_col_label]).to_s,
+        amount: (sanitize_number(row[amount_col_label]).to_f - sanitize_number(row[FEE_COL_LABEL]).to_f).to_s,
+        currency: (row[currency_col_label] || default_currency).to_s,
+        name: (row[name_col_label] || default_row_name).to_s,
+        category: row[category_col_label].to_s,
+        tags: row[tags_col_label].to_s,
+        entity_type: row[entity_type_col_label].to_s,
+        notes: row[notes_col_label].to_s,
+        opening_date: row[opening_date_col_label].to_s
+      }
+    end
+
+    rows.insert_all!(mapped_rows)
   end
 
   private
