@@ -139,17 +139,17 @@ MERCHANT_CATEGORY_MAPPINGS = [
   [ "MINSK HELLO", "Transportation" ],
   [ "MINSK WHOOSH.BIKE", "Transportation" ],
 
-  # Health & Wellness
-  [ "MUZHSKOY SALON GENTS", "Health & Wellness" ],
-  [ "MINSK BARBERSHOP BROCK", "Health & Wellness" ],
+  # Personal: Grooming & Haircuts
+  [ "MUZHSKOY SALON GENTS", "Personal: Grooming & Haircuts" ],
+  [ "MINSK BARBERSHOP BROCK", "Personal: Grooming & Haircuts" ],
 
-  # Health & Wellness: Healthcare & Medical
-  [ "APTEKA", "Health & Wellness: Healthcare & Medical" ],
+  # Health: Healthcare & Medical
+  [ "APTEKA", "Health: Healthcare & Medical" ],
 
-  # Lifestyle: Sport Activities
-  [ "LOGOYSKIY R-N PUNKT PROKATA", "Lifestyle: Sport Activities" ],
-  [ "OOO Yoga Pleys", "Lifestyle: Sport Activities" ],
-  [ "MINSK WAKEFAMILY", "Lifestyle: Sport Activities" ]
+  # Sport & Fitness
+  [ "LOGOYSKIY R-N PUNKT PROKATA", "Sport & Fitness" ],
+  [ "OOO Yoga Pleys", "Sport & Fitness" ],
+  [ "MINSK WAKEFAMILY", "Sport & Fitness" ]
 ]
 
 def create_rules_for_family(family)
