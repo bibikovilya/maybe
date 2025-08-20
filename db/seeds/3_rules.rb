@@ -149,7 +149,10 @@ MERCHANT_CATEGORY_MAPPINGS = [
   # Sport & Fitness
   [ "LOGOYSKIY R-N PUNKT PROKATA", "Sport & Fitness" ],
   [ "OOO Yoga Pleys", "Sport & Fitness" ],
-  [ "MINSK WAKEFAMILY", "Sport & Fitness" ]
+  [ "MINSK WAKEFAMILY", "Sport & Fitness" ],
+
+  # Financial: Bank & Card Fees
+  [ "Отправка SMS Monthly (CMC.PRO)", "Financial: Bank & Card Fees" ]
 ]
 
 def create_rules_for_family(family)
