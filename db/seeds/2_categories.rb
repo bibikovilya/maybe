@@ -156,26 +156,14 @@ EXPENSE_CATEGORIES = [
     color: "#4da568"  # Green for health & wellness
   },
   {
-    name: "Health & Wellness: Health Insurance",
-    lucide_icon: "shield-plus",
-    classification: "expense",
-    parent: "Health & Wellness"
-  },
-  {
-    name: "Health & Wellness: Healthcare & Medical",
+    name: "Health: Healthcare & Medical",
     lucide_icon: "stethoscope",
     classification: "expense",
     parent: "Health & Wellness"
   },
   {
-    name: "Health & Wellness: Dentist",
+    name: "Health: Dentist",
     lucide_icon: "smile",
-    classification: "expense",
-    parent: "Health & Wellness"
-  },
-  {
-    name: "Health & Wellness: Fitness",
-    lucide_icon: "dumbbell",
     classification: "expense",
     parent: "Health & Wellness"
   },
@@ -231,16 +219,17 @@ EXPENSE_CATEGORIES = [
     parent: "Lifestyle & Entertainment"
   },
   {
-    name: "Lifestyle: Sport Activities",
-    lucide_icon: "activity",
-    classification: "expense",
-    parent: "Lifestyle & Entertainment"
-  },
-  {
     name: "Lifestyle: Dog",
     lucide_icon: "dog",
     classification: "expense",
     parent: "Lifestyle & Entertainment"
+  },
+  {
+    name: "Sport & Fitness",
+    lucide_icon: "activity",
+    classification: "expense",
+    parent: nil,
+    color: "#f43f5e"  # Pink for sport & fitness
   },
   {
     name: "Travel & Vacation",
