@@ -130,6 +130,12 @@ EXPENSE_CATEGORIES = [
     parent: "Car"
   },
   {
+    name: "Car: Wash",
+    lucide_icon: "droplets",
+    classification: "expense",
+    parent: "Car"
+  },
+  {
     name: "Transportation",
     lucide_icon: "bus",
     classification: "expense",

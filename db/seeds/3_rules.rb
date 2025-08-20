@@ -126,7 +126,7 @@ MERCHANT_CATEGORY_MAPPINGS = [
 
   # Car: Auto Maintenance
   [ "ARMTEK", "Car: Auto Maintenance" ],
-  [ "OOO LARSKI GRUPP", "Car: Auto Maintenance" ],
+  [ "OOO LARSKI GRUPP", "Car: Wash" ],
 
   # Car: Parking & Tolls
   [ "Avtomobilnyy parking TRK", "Car: Parking & Tolls" ],
