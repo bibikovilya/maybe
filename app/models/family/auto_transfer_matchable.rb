@@ -10,7 +10,7 @@ module Family::AutoTransferMatchable
           inflow_candidates.amount < 0 AND
           outflow_candidates.amount > 0 AND
           inflow_candidates.account_id <> outflow_candidates.account_id AND
-          inflow_candidates.date BETWEEN outflow_candidates.date - 4 AND outflow_candidates.date + 4
+          inflow_candidates.date BETWEEN outflow_candidates.date - 10 AND outflow_candidates.date + 10
         )
       ").joins("
         LEFT JOIN transfers existing_transfers ON (

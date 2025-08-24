@@ -133,6 +133,6 @@ class Transfer < ApplicationRecord
       return unless inflow_transaction&.entry && outflow_transaction&.entry
 
       date_diff = (inflow_transaction.entry.date - outflow_transaction.entry.date).abs
-      errors.add(:base, "Must be within 4 days") if date_diff > 4
+      errors.add(:base, "Must be within 10 days") if date_diff > 10
     end
 end

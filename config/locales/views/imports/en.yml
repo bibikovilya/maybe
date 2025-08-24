@@ -19,6 +19,9 @@ en:
         date_format_label: Date format
       transaction_import:
         date_format_label: Date format
+      transaction_prior_import:
+        date_format_label: Date format
+        description: We have automatically detected and configured your Prior Bank import columns. You can adjust the settings below if needed.
     confirms:
       mappings:
         create_account: Create account
@@ -79,6 +82,7 @@ en:
       import_accounts: Import accounts
       import_mint: Import from Mint
       import_portfolio: Import investments
+      import_transactions_prior: Import transactions from Prior Bank
       import_transactions: Import transactions
       resume: Resume %{type}
       sources: Sources

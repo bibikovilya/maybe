@@ -21,7 +21,7 @@
         <%= styled_form_with model: @import, scope: :import, url: import_upload_path(@import), multipart: true, class: "space-y-2" do |form| %>
           <%= form.select :col_sep, Import::SEPARATORS, label: true %>
 
-          <% if @import.type == "TransactionImport" || @import.type == "TradeImport" %>
+          <% if @import.type == "TransactionImport" || @import.type == "TradeImport" || @import.type == "TransactionPriorImport" %>
             <%= form.select :account_id, @import.family.accounts.visible.pluck(:name, :id), { label: "Account (optional)", include_blank: "Multi-account import", selected: @import.account_id } %>
           <% end %>
 
@@ -53,7 +53,7 @@
         <%= styled_form_with model: @import, scope: :import, url: import_upload_path(@import), multipart: true, class: "space-y-2" do |form| %>
           <%= form.select :col_sep, Import::SEPARATORS, label: true %>
 
-          <% if @import.type == "TransactionImport" || @import.type == "TradeImport" %>
+          <% if @import.type == "TransactionImport" || @import.type == "TradeImport" || @import.type == "TransactionPriorImport" %>
             <%= form.select :account_id, @import.family.accounts.visible.pluck(:name, :id), { label: "Account (optional)", include_blank: "Multi-account import", selected: @import.account_id } %>
           <% end %>
 
@@ -61,7 +61,8 @@
                        rows: 10,
                        required: true,
                        placeholder: "Paste your CSV file contents here",
-                       "data-auto-submit-form-target": "auto" %>
+                       "data-auto-submit-form-target": "auto",
+                       class: "overflow-y-auto border-0" %>
 
           <%= form.submit "Upload CSV", disabled: @import.complete? %>
         <% end %>

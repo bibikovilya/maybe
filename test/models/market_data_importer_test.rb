@@ -14,11 +14,16 @@ class MarketDataImporterTest < ActiveSupport::TestCase
     Holding.delete_all
     Security.delete_all
 
-    @provider = mock("provider")
+    @nbrb_provider = mock("nbrb_provider")
+    Provider::Registry.any_instance
+                      .stubs(:get_provider)
+                      .with(:nbrb)
+                      .returns(@nbrb_provider)
+    @synth_provider = mock("synth_provider")
     Provider::Registry.any_instance
                       .stubs(:get_provider)
                       .with(:synth)
-                      .returns(@provider)
+                      .returns(@synth_provider)
   end
 
   test "syncs required exchange rates" do
@@ -37,14 +42,14 @@ class MarketDataImporterTest < ActiveSupport::TestCase
     expected_start_date = (SNAPSHOT_START_DATE + 1.day) - PROVIDER_BUFFER
     end_date            = Date.current.in_time_zone("America/New_York").to_date
 
-    @provider.expects(:fetch_exchange_rates)
-             .with(from: "CAD",
-                   to: "USD",
-                   start_date: expected_start_date,
-                   end_date: end_date)
-             .returns(provider_success_response([
-               OpenStruct.new(from: "CAD", to: "USD", date: SNAPSHOT_START_DATE, rate: 1.5)
-             ]))
+    @nbrb_provider.expects(:fetch_exchange_rates)
+                  .with(from: "CAD",
+                        to: "USD",
+                        start_date: expected_start_date,
+                        end_date: end_date)
+                  .returns(provider_success_response([
+                    OpenStruct.new(from: "CAD", to: "USD", date: SNAPSHOT_START_DATE, rate: 1.5)
+                  ]))
 
     before = ExchangeRate.count
     MarketDataImporter.new(mode: :snapshot).import_exchange_rates
@@ -59,24 +64,24 @@ class MarketDataImporterTest < ActiveSupport::TestCase
     expected_start_date = SNAPSHOT_START_DATE - PROVIDER_BUFFER
     end_date            = Date.current.in_time_zone("America/New_York").to_date
 
-    @provider.expects(:fetch_security_prices)
-             .with(symbol: security.ticker,
-                   exchange_operating_mic: security.exchange_operating_mic,
-                   start_date: expected_start_date,
-                   end_date: end_date)
-             .returns(provider_success_response([
-               OpenStruct.new(security: security,
-                              date: SNAPSHOT_START_DATE,
-                              price: 100,
-                              currency: "USD")
-             ]))
+    @synth_provider.expects(:fetch_security_prices)
+                   .with(symbol: security.ticker,
+                         exchange_operating_mic: security.exchange_operating_mic,
+                         start_date: expected_start_date,
+                         end_date: end_date)
+                   .returns(provider_success_response([
+                     OpenStruct.new(security: security,
+                                    date: SNAPSHOT_START_DATE,
+                                    price: 100,
+                                    currency: "USD")
+                   ]))
 
-    @provider.stubs(:fetch_security_info)
-             .with(symbol: "AAPL", exchange_operating_mic: "XNAS")
-             .returns(provider_success_response(OpenStruct.new(name: "Apple", logo_url: "logo")))
+    @synth_provider.stubs(:fetch_security_info)
+                   .with(symbol: "AAPL", exchange_operating_mic: "XNAS")
+                   .returns(provider_success_response(OpenStruct.new(name: "Apple", logo_url: "logo")))
 
     # Ignore exchange rate calls for this test
-    @provider.stubs(:fetch_exchange_rates).returns(provider_success_response([]))
+    @synth_provider.stubs(:fetch_exchange_rates).returns(provider_success_response([]))
 
     MarketDataImporter.new(mode: :snapshot).import_security_prices
 

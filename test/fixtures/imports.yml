@@ -3,6 +3,11 @@ transaction:
   type: TransactionImport
   status: pending
 
+transaction_prior:
+  family: dylan_family
+  type: TransactionPriorImport
+  status: pending
+
 trade:
   family: dylan_family
   type: TradeImport
