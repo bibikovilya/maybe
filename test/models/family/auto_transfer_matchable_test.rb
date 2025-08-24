@@ -99,8 +99,8 @@ class Family::AutoTransferMatchableTest < ActiveSupport::TestCase
     end
   end
 
-  test "does not match transactions outside the 4-day window" do
-    create_transaction(date: 10.days.ago.to_date, account: @depository, amount: 500)
+  test "does not match transactions outside the 10-day window" do
+    create_transaction(date: 20.days.ago.to_date, account: @depository, amount: 500)
     create_transaction(date: Date.current, account: @credit_card, amount: -500)
 
     assert_no_difference -> { Transfer.count } do
