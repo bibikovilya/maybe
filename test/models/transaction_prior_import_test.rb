@@ -55,6 +55,42 @@ class TransactionPriorImportTest < ActiveSupport::TestCase
     assert_equal "29.03.2024 19:32:46", transaction_row.date
   end
 
+  test "import all parsed rows into TransactionPriorImportRow records" do
+    @import.update!(
+      raw_file_str: sample_prior_csv,
+      date_col_label: "Дата транзакции",
+      amount_col_label: "Обороты по счету",
+      name_col_label: "Операция",
+      currency_col_label: "Валюта",
+      notes_col_label: "Notes",
+      date_format: "%d.%m.%Y %H:%M:%S"
+    )
+    @import.generate_rows_from_csv
+    @import.reload
+
+    assert_equal 3, @import.rows.count
+  end
+
+  test "creates transactions from imported rows" do
+    @import.update!(
+      account: accounts(:depository),
+      raw_file_str: sample_prior_csv,
+      date_col_label: "Дата транзакции",
+      amount_col_label: "Обороты по счету",
+      name_col_label: "Операция",
+      currency_col_label: "Валюта",
+      notes_col_label: "Notes",
+      date_format: "%d.%m.%Y %H:%M:%S"
+    )
+    @import.generate_rows_from_csv
+    @import.reload
+
+    assert_difference -> { Entry.count } => 3,
+                      -> { Transaction.count } => 3 do
+      @import.publish
+    end
+  end
+
   test "filters out duplicate transactions based on existing imports" do
     # Create an existing import with the same transaction
     existing_import = TransactionPriorImport.create!(
