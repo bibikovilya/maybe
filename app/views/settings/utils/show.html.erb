@@ -1,0 +1,41 @@
+<%= content_for :page_title, t(".page_title") %>
+
+<%= settings_section title: t(".csv_encoding_title"), subtitle: t(".csv_encoding_subtitle") do %>
+  <div class="space-y-4">
+    <p class="text-sm text-secondary mb-4">
+      <%= t(".csv_encoding_description") %>
+    </p>
+
+    <%= styled_form_with url: fix_encoding_settings_utils_path, multipart: true, class: "space-y-4", data: { turbo: false } do |form| %>
+      <div class="flex flex-col items-center justify-center w-full min-h-48 border border-secondary border-dashed rounded-xl cursor-pointer"
+           data-controller="file-upload"
+           data-action="click->file-upload#triggerFileInput"
+           data-file-upload-target="uploadArea">
+        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+          <div data-file-upload-target="uploadText" class="flex flex-col items-center">
+            <%= icon("plus", size: "lg", class: "mb-4 mx-auto") %>
+            <p class="mb-2 text-md text-gray text-center">
+              <span class="font-medium text-primary"><%= t(".browse_text") %></span> <%= t(".browse_description") %>
+            </p>
+            <p class="text-xs text-secondary"><%= t(".upload_hint") %></p>
+          </div>
+
+          <div class="hidden flex-col gap-4 items-center mb-2" data-file-upload-target="fileName">
+            <span class="text-primary">
+              <%= icon("file-text", size: "lg", color: "current") %>
+            </span>
+            <p class="text-md font-medium text-primary"></p>
+          </div>
+
+          <%= form.file_field :csv_files,
+                              multiple: true,
+                              accept: ".csv",
+                              class: "hidden",
+                              "data-file-upload-target": "input" %>
+        </div>
+      </div>
+
+      <%= form.submit t(".submit_button"), class: "w-full" %>
+    <% end %>
+  </div>
+<% end %>
