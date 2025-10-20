@@ -81,7 +81,7 @@ module Utils
 
     test "cleanup removes temporary directory" do
       uploaded_file = create_test_csv_file("test.csv", "Name;Age\nJohn;30")
-      fixer = CsvEncodingFixer.new([uploaded_file])
+      fixer = CsvEncodingFixer.new([ uploaded_file ])
 
       zip_path = fixer.call
       temp_dir = File.dirname(zip_path)
@@ -95,7 +95,7 @@ module Utils
 
     test "cleanup is safe to call when directory doesn't exist" do
       uploaded_file = create_test_csv_file("test.csv", "Name;Age\nJohn;30")
-      fixer = CsvEncodingFixer.new([uploaded_file])
+      fixer = CsvEncodingFixer.new([ uploaded_file ])
 
       fixer.call
       fixer.cleanup
