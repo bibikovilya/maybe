@@ -5,6 +5,7 @@ class Account < ApplicationRecord
 
   belongs_to :family
   belongs_to :import, optional: true
+  belongs_to :prior_account, optional: true
 
   has_many :import_mappings, as: :mappable, dependent: :destroy, class_name: "Import::Mapping"
   has_many :entries, dependent: :destroy
