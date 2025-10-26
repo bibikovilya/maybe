@@ -13,6 +13,7 @@ en:
         title: Require invite code for signup
       show:
         general: General Settings
+        priorbank: Priorbank Integration
         invites: Invite Codes
         title: Self-Hosting
         danger_zone: Danger Zone
@@ -28,6 +29,14 @@ en:
         placeholder: Enter your API key here
         plan: "%{plan} plan"
         title: Synth Settings
+      priorbank_settings:
+        configured: Priorbank credentials are configured and ready to use
+        description: Configure your Priorbank credentials for automatic transaction syncing
+        login_label: Login
+        login_placeholder: Enter your Priorbank login
+        password_label: Password
+        password_placeholder: Enter your Priorbank password
+        title: Priorbank Settings
       update:
         failure: Invalid setting value
         success: Settings updated

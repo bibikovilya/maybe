@@ -6,6 +6,10 @@
   </div>
 <% end %>
 
+<%= settings_section title: t(".priorbank") do %>
+  <%= render "settings/hostings/priorbank_settings" %>
+<% end %>
+
 <%= settings_section title: t(".invites") do %>
   <%= render "settings/hostings/invite_code_settings" %>
 <% end %>

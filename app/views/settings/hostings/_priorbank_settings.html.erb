@@ -1,0 +1,41 @@
+<div class="space-y-4">
+  <div>
+    <h2 class="font-medium mb-1"><%= t(".title") %></h2>
+    <% if ENV["PRIORBANK_LOGIN"].present? && ENV["PRIORBANK_PASSWORD"].present? %>
+      <p class="text-sm text-secondary">You have successfully configured your Priorbank credentials through the PRIORBANK_LOGIN and PRIORBANK_PASSWORD environment variables.</p>
+    <% else %>
+      <p class="text-secondary text-sm mb-4"><%= t(".description") %></p>
+    <% end %>
+  </div>
+
+  <%= styled_form_with model: Setting.new,
+                       url: settings_hosting_path,
+                       method: :patch,
+                       data: {
+                         controller: "auto-submit-form",
+                         "auto-submit-form-trigger-event-value": "blur"
+                       } do |form| %>
+    <%= form.text_field :priorbank_login,
+                        label: t(".login_label"),
+                        placeholder: t(".login_placeholder"),
+                        value: ENV.fetch("PRIORBANK_LOGIN", Setting.priorbank_login),
+                        disabled: ENV["PRIORBANK_LOGIN"].present?,
+                        data: { "auto-submit-form-target": "auto" } %>
+
+    <%= form.text_field :priorbank_password,
+                        label: t(".password_label"),
+                        type: "password",
+                        placeholder: t(".password_placeholder"),
+                        value: ENV.fetch("PRIORBANK_PASSWORD", Setting.priorbank_password),
+                        disabled: ENV["PRIORBANK_PASSWORD"].present?,
+                        data: { "auto-submit-form-target": "auto" } %>
+  <% end %>
+
+  <% if ENV.fetch("PRIORBANK_LOGIN", Setting.priorbank_login).present? && ENV.fetch("PRIORBANK_PASSWORD", Setting.priorbank_password).present? %>
+    <div class="bg-green-50 border border-green-200 rounded-md p-3">
+      <p class="text-sm text-green-800">
+        <%= t(".configured") %>
+      </p>
+    </div>
+  <% end %>
+</div>

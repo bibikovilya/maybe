@@ -23,8 +23,16 @@ class Settings::HostingsController < ApplicationController
       Setting.synth_api_key = hosting_params[:synth_api_key]
     end
 
+    if hosting_params.key?(:priorbank_login)
+      Setting.priorbank_login = hosting_params[:priorbank_login]
+    end
+
+    if hosting_params.key?(:priorbank_password)
+      Setting.priorbank_password = hosting_params[:priorbank_password]
+    end
+
     redirect_to settings_hosting_path, notice: t(".success")
-  rescue ActiveRecord::RecordInvalid => error
+  rescue ActiveRecord::RecordInvalid
     flash.now[:alert] = t(".failure")
     render :show, status: :unprocessable_entity
   end
@@ -36,7 +44,7 @@ class Settings::HostingsController < ApplicationController
 
   private
     def hosting_params
-      params.require(:setting).permit(:require_invite_for_signup, :require_email_confirmation, :synth_api_key)
+      params.require(:setting).permit(:require_invite_for_signup, :require_email_confirmation, :synth_api_key, :priorbank_login, :priorbank_password)
     end
 
     def ensure_admin
