@@ -14,7 +14,14 @@
   <% end %>
 
   <% unless account.linked? %>
-    <% if account.priorbank_enabled? %>
+    <% if account.prior_enabled? %>
+      <% menu.with_item(
+        variant: "link",
+        text: "Sync Priorbank transactions",
+        href: edit_sync_account_prior_account_path(account),
+        icon: "refresh-cw",
+        data: { turbo_frame: :modal }
+      ) %>
       <% menu.with_item(
         variant: "button",
         text: "Unlink Priorbank",

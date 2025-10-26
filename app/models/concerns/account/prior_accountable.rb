@@ -5,11 +5,11 @@ module Account::PriorAccountable
     belongs_to :prior_account, optional: true
   end
 
-  def priorbank_enabled?
+  def prior_enabled?
     prior_account.present?
   end
 
-  def enable_priorbank_sync!(account_number: nil, name: nil)
+  def enable_prior_sync!(account_number: nil, name: nil)
     return if prior_account.present?
 
     prior = PriorAccount.create!(
@@ -21,7 +21,7 @@ module Account::PriorAccountable
     update!(prior_account: prior)
   end
 
-  def disable_priorbank_sync!
+  def disable_prior_sync!
     return unless prior_account.present?
 
     prior_account.destroy

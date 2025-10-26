@@ -170,7 +170,12 @@ Rails.application.routes.draw do
       post :sync_all
     end
 
-    resource :prior_account, only: %i[new create destroy], module: :accounts
+    resource :prior_account, only: %i[new create destroy], module: :accounts do
+      member do
+        get :edit_sync
+        post :sync
+      end
+    end
   end
 
   # Convenience routes for polymorphic paths
