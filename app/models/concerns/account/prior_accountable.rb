@@ -1,5 +1,9 @@
-module Account::PriorbankSyncable
+module Account::PriorAccountable
   extend ActiveSupport::Concern
+
+  included do
+    belongs_to :prior_account, optional: true
+  end
 
   def priorbank_enabled?
     prior_account.present?
@@ -22,5 +26,4 @@ module Account::PriorbankSyncable
 
     prior_account.destroy
   end
-
 end

@@ -1,11 +1,10 @@
 class Account < ApplicationRecord
-  include AASM, Syncable, Monetizable, Chartable, Linkable, Enrichable, Anchorable, Reconcileable, Account::PriorbankSyncable
+  include AASM, Syncable, Monetizable, Chartable, Linkable, Enrichable, Anchorable, Reconcileable, Account::PriorAccountable
 
   validates :name, :balance, :currency, presence: true
 
   belongs_to :family
   belongs_to :import, optional: true
-  belongs_to :prior_account, optional: true
 
   has_many :import_mappings, as: :mappable, dependent: :destroy, class_name: "Import::Mapping"
   has_many :entries, dependent: :destroy
