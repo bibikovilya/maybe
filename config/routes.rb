@@ -169,6 +169,8 @@ Rails.application.routes.draw do
     collection do
       post :sync_all
     end
+
+    resource :prior_account, only: %i[new create destroy], module: :accounts
   end
 
   # Convenience routes for polymorphic paths

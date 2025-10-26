@@ -1,5 +1,5 @@
 class PriorAccount < ApplicationRecord
-  has_one :account, dependent: :destroy
+  has_one :account, dependent: :nullify
 
   validates :name, presence: true, uniqueness: true
   validates :currency, presence: true

@@ -1,0 +1,31 @@
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: "Link Priorbank Account") %>
+  <% dialog.with_body do %>
+    <% if @error_message.present? %>
+      <%= render DS::Alert.new(message: @error_message, variant: :error) %>
+    <% end %>
+
+    <%= styled_form_with model: @prior_account, url: account_prior_account_path(@account), scope: :prior_account, data: { turbo: false }, class: "flex flex-col gap-4 justify-between grow text-primary" do |form| %>
+      <div class="grow space-y-2">
+        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm text-gray-600">
+            Link this account to your Priorbank account for automatic transaction syncing.
+          </p>
+        </div>
+
+        <%= form.text_field :name,
+                           placeholder: @account.name,
+                           required: true,
+                           label: "Display Name",
+                           help_text: "A unique name for this Priorbank account" %>
+
+        <%= form.text_field :account_number,
+                           placeholder: "BY12PJCB30123456789012345678",
+                           label: "Priorbank Account Number (optional)",
+                           help_text: "Enter your full Priorbank account number (IBAN format) if available" %>
+      </div>
+
+      <%= form.submit "Link Priorbank Account", class: "btn btn-primary" %>
+    <% end %>
+  <% end %>
+<% end %>
