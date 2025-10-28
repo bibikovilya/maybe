@@ -12,6 +12,45 @@
     <%= form.text_field :name, placeholder: t(".name_placeholder"), required: "required", label: t(".name_label") %>
 
     <% unless account.linked? %>
+      <div class="space-y-2">
+        <%= form.label :logo, "Logo", class: "block text-sm font-medium text-primary" %>
+
+        <div class="flex flex-col items-center justify-center w-full min-h-32 border border-secondary border-dashed rounded-xl cursor-pointer"
+             data-controller="file-upload"
+             data-action="click->file-upload#triggerFileInput"
+             data-file-upload-target="uploadArea">
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <div data-file-upload-target="uploadText" class="flex flex-col items-center <%= 'hidden' if account.logo.attached? %>">
+              <%= icon("plus", size: "lg", class: "mb-4 mx-auto") %>
+              <p class="mb-2 text-sm text-gray text-center">
+                <span class="font-medium text-primary">Browse</span> or drag and drop
+              </p>
+              <p class="text-xs text-secondary">PNG, JPG or SVG</p>
+            </div>
+
+            <div class="<%= account.logo.attached? ? 'flex' : 'hidden' %> flex-col gap-4 items-center mb-2" data-file-upload-target="fileName">
+              <% if account.logo.attached? %>
+                <%= image_tag account.logo, class: "w-16 h-16 rounded-full object-cover", data: { file_upload_target: "preview" } %>
+              <% else %>
+                <span class="text-primary">
+                  <%= icon("file-image", size: "lg", color: "current") %>
+                </span>
+              <% end %>
+              <img class="hidden w-16 h-16 rounded-full object-cover" data-file-upload-target="preview" />
+              <p class="text-sm font-medium text-primary"><%= account.logo.attached? ? 'Current logo' : '' %></p>
+            </div>
+
+            <%= form.file_field :logo,
+                                accept: "image/*",
+                                direct_upload: true,
+                                class: "hidden",
+                                "data-file-upload-target": "input" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% unless account.linked? %>
       <%= form.money_field :balance, label: t(".balance"), required: true, default_currency: Current.family.currency %>
     <% end %>
 
