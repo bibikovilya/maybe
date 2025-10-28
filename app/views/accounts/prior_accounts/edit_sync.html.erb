@@ -12,13 +12,13 @@
         <%= form.date_field :start_date,
                            label: "Start Date",
                            help_text: "The earliest date to sync transactions from",
-                           value: @account.prior_account&.last_statement_date || 30.days.ago.to_date,
+                           value: @account.entries.maximum(:date) - 1.days || 30.days.ago.to_date,
                            max: Date.current %>
 
         <%= form.date_field :end_date,
                            label: "End Date",
                            help_text: "The latest date to sync transactions to",
-                           value: Date.current,
+                           value: [ @account.entries.maximum(:date) - 1.days + 3.months, Date.current ].min,
                            max: Date.current %>
       </div>
 

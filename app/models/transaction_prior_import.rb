@@ -126,27 +126,27 @@ class TransactionPriorImport < TransactionImport
     rows.insert_all!(mapped_rows)
   end
 
-  private
+  def set_defaults
+    self.amount_type_strategy = "signed_amount"
+    self.signage_convention = "inflows_positive"
+    self.number_format = "1.234,56"
+    self.date_format = "%d.%m.%Y %H:%M:%S"
+  end
 
-    def set_defaults
-      self.amount_type_strategy ||= "signed_amount"
-      self.signage_convention ||= "inflows_negative"
-      self.number_format ||= "1.234,56"
-      self.date_format ||= "%d.%m.%Y %H:%M:%S"
-    end
+  def set_default_column_mappings
+    return unless csv_headers.present?
 
-    def set_default_column_mappings
-      return unless csv_headers.present?
-
-      transaction do
-        DEFAULT_COLUMN_MAPPINGS.each do |column_attr, header_name|
-          if csv_headers.include?(header_name) && public_send(column_attr).blank?
-            assign_attributes(column_attr => header_name)
-          end
+    transaction do
+      DEFAULT_COLUMN_MAPPINGS.each do |column_attr, header_name|
+        if csv_headers.include?(header_name) && public_send(column_attr).blank?
+          assign_attributes(column_attr => header_name)
         end
-        save!
       end
+      save!
     end
+  end
+
+  private
 
     def parsed_csv
       @parsed_csv ||= begin

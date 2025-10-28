@@ -46,20 +46,26 @@ module Utils
       end
 
       def convert(uploaded_file)
-        converted_csv = StringIO.new
+        self.class.convert_file(uploaded_file.tempfile.path)
+      end
 
-        CSV.open(converted_csv, "w") do |csv|
-          CSV.foreach(
-            uploaded_file.tempfile.path,
-            encoding: Encoding::Windows_1251,
-            liberal_parsing: true,
-            col_sep: ";"
-          ) do |row|
-            csv << row
+      class << self
+        def convert_file(file_path)
+          converted_csv = StringIO.new
+
+          CSV.open(converted_csv, "w") do |csv|
+            CSV.foreach(
+              file_path,
+              encoding: Encoding::Windows_1251,
+              liberal_parsing: true,
+              col_sep: ";"
+            ) do |row|
+              csv << row
+            end
           end
-        end
 
-        converted_csv.string
+          converted_csv.string
+        end
       end
   end
 end
