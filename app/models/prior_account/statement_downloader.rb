@@ -1,19 +1,21 @@
 class PriorAccount::StatementDownloader
   LOGIN_PATH = "https://www.prior.by/web/"
 
-  attr_reader :browser, :page, :download_path
+  attr_reader :browser, :page, :download_path, :sync
   attr_accessor :start_date, :end_date, :card_name
 
-  def initialize(start_date, end_date, card_name, headless: true)
+  def initialize(start_date, end_date, card_name, headless: true, sync: nil)
     @browser = Ferrum::Browser.new(timeout: 20, headless: headless)
     @page = browser.create_page
     @start_date = start_date
     @end_date = end_date
     @card_name = card_name
     @download_path = Dir.mktmpdir("priorbank_statements_")
+    @sync = sync
   end
 
   def call
+    sync_update("statement_downloader", "Starting statement download...")
     login
     close_popup
     open_cards
@@ -23,10 +25,11 @@ class PriorAccount::StatementDownloader
     download_statement
     sleep(1)
 
+    sync_update("statement_downloader", "Statement downloaded successfully!", "success")
     downloaded_file_path
   rescue => e
     page.screenshot(path: Rails.root.join("tmp", "prior_fail-#{Time.now.to_i}.png").to_s, full: true)
-    Rails.logger.error "[Priorbank] Failed to download statements: #{e.message}"
+    sync_update("statement_downloader", "Failed to download statement: #{e.message}", "error")
     raise e
   ensure
     browser.quit
@@ -38,10 +41,17 @@ class PriorAccount::StatementDownloader
 
   private
 
+    def sync_update(step, message, status = "in_progress")
+      return unless sync
+
+      Rails.logger.info "[PriorAccount::StatementDownloader] Sync update - Step: #{step}, Message: #{message}, Status: #{status}"
+      sync.progress_update(step: step, message: message, status: status)
+    end
+
     def login
-      Rails.logger.info "[Priorbank] Logging in..."
+      sync_update("login", "Logging into Priorbank...")
       page.go_to LOGIN_PATH
-      Rails.logger.info "[Priorbank] Waiting for login form..."
+      sync_update("login", "Waiting for login form...")
       wait_for('//form[contains(@action, "Login")]', wait: 5, step: 0.5)
       form = page.at_xpath('//form[contains(@action, "Login")]')
       login_input = form.at_xpath('.//input[@name="UserName"]')
@@ -51,50 +61,47 @@ class PriorAccount::StatementDownloader
       login_input.focus.type Setting.priorbank_login
       password_input.focus.type Setting.priorbank_password
 
-      Rails.logger.info "[Priorbank] Submitting login form..."
+      sync_update("login", "Submitting login form...")
       submit_button.click
-      Rails.logger.info "[Priorbank] Waiting for idle..."
+      sync_update("login", "Waiting for idle...")
       page.network.wait_for_idle
 
       raise "Failed to login" if page.current_title != "Рабочий стол"
 
-      Rails.logger.info "[Priorbank] Successfully logged in"
+      sync_update("login_success", "Successfully logged in", "success")
     end
 
     def close_popup
-      Rails.logger.info "[Priorbank] Closing popup..."
+      sync_update("close_popup", "Closing popup...")
 
       while popup = page.at_css("div.k-widget.k-window") && popup.visible?
         popup.at_css("span.k-i-close").click
-
-        Rails.logger.info "[Priorbank] Closed popup"
-
+        sync_update("close_popup", "Closed popup")
         sleep(0.1)
       end
 
-      Rails.logger.info "[Priorbank] No popup found"
+      sync_update("close_popup", "No popup found", "success")
     end
 
     def open_cards
-      Rails.logger.info "[Priorbank] Opening cards page..."
+      sync_update("open_cards", "Opening cards page...")
 
       page.css("span.menu-item-parent").find { |menu| menu.text == "Мои продукты" }.click
       page.css("span.menu-item-parent").find { |menu| menu.text == "Карты" }.click
 
-      Rails.logger.info "[Priorbank] Waiting for cards table..."
+      sync_update("open_cards", "Waiting for cards table...")
       wait_for("div.bank-cards-list", init: 1, wait: 5, step: 0.5)
 
       raise "[Priorbank] Failed to open cards" if page.current_title != "Платежные карточки"
 
-      Rails.logger.info "[Priorbank] Successfully opened cards page"
+      sync_update("open_cards", "Cards page loaded", "success")
     end
 
     def select_card
-      Rails.logger.info "[Priorbank] Unselecting default card..."
+      sync_update("select_card", "Start selecting card '#{card_name}'...")
       default_card = page.at_css("div.bank-cards-list tbody tr div.checkbox-cell input:checked")
       default_card.click if default_card
 
-      Rails.logger.info "[Priorbank] Selecting card '#{card_name}'..."
       card_row = page.css("div.bank-cards-list tbody tr").find do |row|
         row.text.include?(card_name)
       end
@@ -105,26 +112,26 @@ class PriorAccount::StatementDownloader
       checkbox.focus
       checkbox.click
 
-      Rails.logger.info "[Priorbank] Successfully selected card '#{card_name}'"
+      sync_update("select_card", "Card '#{card_name}' selected", "success")
     end
 
     def open_statements
-      Rails.logger.info "[Priorbank] Opening statements..."
+      sync_update("open_statements", "Opening statements...")
       page.css("ul.nav.nav-pills li.enabled a").find { |link| link.attribute("data-link-action") == "history" }.click
 
-      Rails.logger.info "[Priorbank] Waiting for filters..."
+      sync_update("open_statements", "Waiting for filters...")
       filters = wait_for("div.detailedreport-cards-filter", init: 1, wait: 5, step: 0.5)
 
       raise "[Priorbank] Failed to open statements" unless filters
 
-      Rails.logger.info "[Priorbank] Successfully opened statements"
+      sync_update("open_statements", "Statements page loaded", "success")
     end
 
     def setup_filters
-      Rails.logger.info "[Priorbank] Setting up filters..."
+      sync_update("setup_filters", "Setting up date filters...")
       page.css("span.lbl").find { |lbl| lbl.text.strip == "за период" }.click
 
-      Rails.logger.info "[Priorbank] Selecting dates..."
+      sync_update("setup_filters", "Selecting dates #{start_date.strftime('%d.%m.%Y')} - #{end_date.strftime('%d.%m.%Y')}...")
       from = page.xpath("//span[contains(@class, 'k-picker-wrap')]//input")[0]
       to =   page.xpath("//span[contains(@class, 'k-picker-wrap')]//input")[1]
 
@@ -137,23 +144,23 @@ class PriorAccount::StatementDownloader
       sleep(0.1)
       to.type end_date.strftime("%d%m%Y")
 
-      Rails.logger.info "[Priorbank] Submitting filters..."
+      sync_update("setup_filters", "Submitting filters...")
       wait_for(".bia-filter .row.actions button.btn.btn-primary", init: 1, wait: 5, step: 0.5)
       page.at_css(".bia-filter .row.actions button.btn.btn-primary").click # First click does not work. To lose focus from datepickers probably
       page.at_css(".bia-filter .row.actions button.btn.btn-primary").click
 
-      Rails.logger.info "[Priorbank] Waiting for idle..."
+      sync_update("setup_filters", "Waiting for idle...")
       page.network.wait_for_idle
       wait_for(".bia-context-element-header", wait: 5, step: 0.5)
 
       card_header = page.at_css(".bia-context-element-header")
       raise "[Priorbank] Card statement not found" unless card_header
 
-      Rails.logger.info "[Priorbank] Successfully set up filters"
+      sync_update("setup_filters", "Date filters applied", "success")
     end
 
     def download_statement
-      Rails.logger.info "[Priorbank] Downloading statement for '#{card_name}'..."
+      sync_update("download_statement", "Downloading statement file...")
 
       page.downloads.set_behavior(save_path: download_path, behavior: :allow)
 
@@ -163,7 +170,7 @@ class PriorAccount::StatementDownloader
       link.focus
       page.downloads.wait { link.click }
 
-      Rails.logger.info "[Priorbank] Successfully downloaded statement"
+      sync_update("download_statement", "Statement file downloaded", "success")
     end
 
     def downloaded_file_path
@@ -171,21 +178,22 @@ class PriorAccount::StatementDownloader
       raise "[Priorbank] No CSV file found in download path" if files.empty?
 
       file_path = files.first
-      Rails.logger.info "[Priorbank] Found downloaded file: #{file_path}"
+      sync_update("downloaded_file", "Found downloaded file: #{file_path}", "success")
 
       file_path
     end
 
     def wait_for(selector, init: nil, wait: 1, step: 0.1, screenshot: false)
-      Rails.logger.info "[Priorbank] Waiting for selector: #{selector}"
+      sync_update("wait_for", "Waiting for selector: #{selector}")
       sleep(init) if init
       page.screenshot(path: Rails.root.join("tmp", "prior-wait-#{selector.gsub(/[^a-zA-Z0-9]/, '_')}-#{Time.now.to_i}.png").to_s, full: true) if screenshot
       meth = selector.start_with?("/") ? :at_xpath : :at_css
       until node = page.send(meth, selector) rescue nil
         page.screenshot(path: Rails.root.join("tmp", "prior-wait-#{selector.gsub(/[^a-zA-Z0-9]/, '_')}-#{Time.now.to_i}.png").to_s, full: true) if screenshot
-        Rails.logger.info "[Priorbank] Still waiting for selector: #{selector}"
+        sync_update("wait_for", "Still waiting for selector: #{selector}")
         (wait -= step) > 0 ? sleep(step) : break
       end
+      sync_update("wait_for", "Selector found: #{node}", "success")
       node
     end
 end
