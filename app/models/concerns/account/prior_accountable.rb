@@ -3,6 +3,7 @@ module Account::PriorAccountable
 
   included do
     belongs_to :prior_account, optional: true
+    scope :with_prior_account, -> { where.not(prior_account_id: nil) }
   end
 
   def prior_enabled?
