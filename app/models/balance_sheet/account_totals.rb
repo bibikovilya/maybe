@@ -56,6 +56,7 @@ class BalanceSheet::AccountTotals
             "accounts.*",
             "SUM(accounts.balance * COALESCE(exchange_rates.rate, 1)) as converted_balance"
           )
+          .alphabetically
           .group(:classification, :accountable_type, :id)
           .to_a
       end
