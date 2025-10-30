@@ -1,0 +1,33 @@
+---
+en:
+  syncs:
+    empty:
+      message: No syncs yet.
+    sync:
+      completed: Completed
+      failed: Failed
+      label: "Sync: %{datetime}"
+      pending: Pending
+      stale: Stale
+      syncing: Syncing
+      view: View
+    index:
+      syncs: Prior account Syncs
+      title: Syncs
+    show:
+      completed: Completed
+      completed_at: Completed at
+      created_at: Created at
+      error: Error
+      failed: Failed
+      failed_at: Failed at
+      from: From
+      no_steps: No sync steps recorded yet.
+      pending: Pending
+      stale: Stale
+      syncing_at: Syncing at
+      sync_steps: Sync Steps
+      sync_window: Sync Window
+      syncing: Syncing
+      title: Sync Details
+      until: Until

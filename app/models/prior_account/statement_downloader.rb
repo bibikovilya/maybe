@@ -68,7 +68,7 @@ class PriorAccount::StatementDownloader
 
       raise "Failed to login" if page.current_title != "Рабочий стол"
 
-      sync_update("login_success", "Successfully logged in", "success")
+      sync_update("login", "Successfully logged in", "success")
     end
 
     def close_popup

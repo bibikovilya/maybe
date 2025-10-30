@@ -117,6 +117,8 @@ Rails.application.routes.draw do
     resources :mappings, only: :update, module: :import
   end
 
+  resources :syncs, only: %i[index show]
+
   resources :holdings, only: %i[index new show destroy]
   resources :trades, only: %i[show new create update destroy]
   resources :valuations, only: %i[show new create update destroy] do
