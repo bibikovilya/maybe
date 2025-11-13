@@ -137,7 +137,7 @@ module Utils
     test "convert_file class method converts Windows-1251 to UTF-8" do
       utf8_content = "Дата;Операция;\n18.10.2025;Retail BLR MINSK;"
       windows1251_content = utf8_content.encode("Windows-1251")
-      tempfile = Tempfile.new(["test", ".csv"])
+      tempfile = Tempfile.new([ "test", ".csv" ])
       tempfile.binmode
       tempfile.write(windows1251_content)
       tempfile.rewind
@@ -153,7 +153,7 @@ module Utils
 
     test "convert_file class method handles CSV with semicolon separator" do
       content = "Name;Age\nJohn;30\nJane;25"
-      tempfile = Tempfile.new(["test", ".csv"])
+      tempfile = Tempfile.new([ "test", ".csv" ])
       tempfile.write(content.encode("Windows-1251"))
       tempfile.rewind
       @temp_files << tempfile
