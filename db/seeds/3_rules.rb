@@ -106,6 +106,7 @@ MERCHANT_CATEGORY_MAPPINGS = [
   [ "Patreon", "Lifestyle: Subscriptions" ],
   [ "YouTubePremium", "Lifestyle: Subscriptions" ],
   [ "Netflix.com", "Lifestyle: Subscriptions" ],
+  [ "Hong Kong SmartGlocal", "Lifestyle: Subscriptions" ],
 
   # Lifestyle & Entertainment
   [ "SILVERSCREEN", "Lifestyle & Entertainment" ],
