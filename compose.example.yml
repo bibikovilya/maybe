@@ -17,15 +17,8 @@
 #
 # To run this, you should read the setup guide:
 #
-# https://github.com/maybe-finance/maybe/blob/main/docs/hosting/docker.md
-#
-# Troubleshooting:
-# ----------------
-#
-# If you run into problems, you should open a Discussion here:
-#
-# https://github.com/maybe-finance/maybe/discussions/categories/general
-#
+# https://github.com/bibikovilya/maybe/blob/main/docs/hosting/docker.md
+
 
 x-db-env: &db_env
   POSTGRES_USER: ${POSTGRES_USER:-maybe_user}
@@ -46,7 +39,7 @@ x-rails-env: &rails_env
 
 services:
   web:
-    image: ghcr.io/maybe-finance/maybe:latest
+    image: ghcr.io/bibikovilya/maybe:latest
     volumes:
       - app-storage:/rails/storage
     ports:
@@ -63,7 +56,7 @@ services:
       - maybe_net
 
   worker:
-    image: ghcr.io/maybe-finance/maybe:latest
+    image: ghcr.io/bibikovilya/maybe:latest
     command: bundle exec sidekiq
     restart: unless-stopped
     depends_on:
