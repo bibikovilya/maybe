@@ -38,28 +38,12 @@ x-rails-env: &rails_env
   OPENAI_ACCESS_TOKEN: ${OPENAI_ACCESS_TOKEN}
 
 services:
-  caddy:
-    image: caddy:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy-data:/data
-      - caddy-config:/config
-    networks:
-      - maybe_net
-    depends_on:
-      - web
-
   web:
     image: ghcr.io/bibikovilya/maybe:latest
     volumes:
       - app-storage:/rails/storage
-    expose:
-      - 3000
+    ports:
+      - 3000:3000
     restart: unless-stopped
     environment:
       <<: *rails_env
@@ -115,8 +99,6 @@ volumes:
   app-storage:
   postgres-data:
   redis-data:
-  caddy-data:
-  caddy-config:
 
 networks:
   maybe_net:
