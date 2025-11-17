@@ -38,6 +38,15 @@ class Settings::HostingsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "can update priorbank settings" do
+    with_self_hosting do
+      patch settings_hosting_url, params: { setting: { priorbank_login: "1234567A001PB3", priorbank_password: "password" } }
+
+      assert_equal "1234567A001PB3", Setting.priorbank_login
+      assert_equal "password", Setting.priorbank_password
+    end
+  end
+
   test "can update settings when self hosting is enabled" do
     with_self_hosting do
       patch settings_hosting_url, params: { setting: { synth_api_key: "1234567890" } }

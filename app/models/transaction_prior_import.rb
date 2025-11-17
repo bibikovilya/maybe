@@ -10,7 +10,6 @@ class TransactionPriorImport < TransactionImport
     currency_col_label: "Валюта",
     notes_col_label: NOTES_HEADER
   }.freeze
-  FEE_COL_LABEL = "Комиссия/Money-back".freeze
   WITHDRAW_PATTERN = "Снятие наличных".freeze
   FILE_LINES = {
     transaction_start: "Операции по ",
@@ -112,7 +111,7 @@ class TransactionPriorImport < TransactionImport
         ticker: row[ticker_col_label].to_s,
         exchange_operating_mic: row[exchange_operating_mic_col_label].to_s,
         price: sanitize_number(row[price_col_label]).to_s,
-        amount: (sanitize_number(row[amount_col_label]).to_f - sanitize_number(row[FEE_COL_LABEL]).to_f).to_s,
+        amount: sanitize_number(row[amount_col_label]).to_s,
         currency: (row[currency_col_label] || default_currency).to_s,
         name: (row[name_col_label] || default_row_name).to_s,
         category: row[category_col_label].to_s,
@@ -126,27 +125,27 @@ class TransactionPriorImport < TransactionImport
     rows.insert_all!(mapped_rows)
   end
 
-  private
+  def set_defaults
+    self.amount_type_strategy = "signed_amount"
+    self.signage_convention = "inflows_positive"
+    self.number_format = "1.234,56"
+    self.date_format = "%d.%m.%Y %H:%M:%S"
+  end
 
-    def set_defaults
-      self.amount_type_strategy ||= "signed_amount"
-      self.signage_convention ||= "inflows_negative"
-      self.number_format ||= "1.234,56"
-      self.date_format ||= "%d.%m.%Y %H:%M:%S"
-    end
+  def set_default_column_mappings
+    return unless csv_headers.present?
 
-    def set_default_column_mappings
-      return unless csv_headers.present?
-
-      transaction do
-        DEFAULT_COLUMN_MAPPINGS.each do |column_attr, header_name|
-          if csv_headers.include?(header_name) && public_send(column_attr).blank?
-            assign_attributes(column_attr => header_name)
-          end
+    transaction do
+      DEFAULT_COLUMN_MAPPINGS.each do |column_attr, header_name|
+        if csv_headers.include?(header_name) && public_send(column_attr).blank?
+          assign_attributes(column_attr => header_name)
         end
-        save!
       end
+      save!
     end
+  end
+
+  private
 
     def parsed_csv
       @parsed_csv ||= begin

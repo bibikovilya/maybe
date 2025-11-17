@@ -84,6 +84,7 @@ en:
       rules_label: Rules
       security_label: Security
       self_hosting_label: Self hosting
+      syncs_label: Syncs
       tags_label: Tags
       transactions_section_title: Transactions
       utils_label: Utilities

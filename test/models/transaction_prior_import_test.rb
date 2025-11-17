@@ -152,7 +152,7 @@ class TransactionPriorImportTest < ActiveSupport::TestCase
 
     row = @import.rows.find { |r| r.name.include?("Отправка SMS Monthly") }
     assert row.present?, "Should find test transaction row"
-    assert_equal "0.0", row.amount
+    assert_equal "-1.08", row.amount
   end
 
   test "detects ATM withdrawals and creates transfers" do

@@ -1,0 +1,31 @@
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: "Sync Priorbank Transactions") %>
+  <% dialog.with_body do %>
+    <%= styled_form_with url: sync_account_prior_account_path(@account), method: :post, data: { turbo_frame: "_top" }, class: "h-full flex flex-col justify-between gap-4" do |form| %>
+      <div class="space-y-4">
+        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm text-gray-600">
+            Select a date range to sync transactions from Priorbank. <strong>Maximum range: 3 months.</strong>
+          </p>
+        </div>
+
+        <%= form.date_field :start_date,
+                           label: "Start Date",
+                           help_text: "The earliest date to sync transactions from",
+                           value: @account.entries.maximum(:date) - 1.days || 30.days.ago.to_date,
+                           max: Date.current %>
+
+        <%= form.date_field :end_date,
+                           label: "End Date",
+                           help_text: "The latest date to sync transactions to",
+                           value: [ @account.entries.maximum(:date) - 1.days + 3.months, Date.current ].min,
+                           max: Date.current %>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-auto">
+        <%= render DS::Button.new(text: "Cancel", variant: "ghost", data: { action: "click->dialog#close" }) %>
+        <%= form.submit "Sync Transactions", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

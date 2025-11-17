@@ -134,6 +134,38 @@ module Utils
       fixer.cleanup
     end
 
+    test "convert_file class method converts Windows-1251 to UTF-8" do
+      utf8_content = "Дата;Операция;\n18.10.2025;Retail BLR MINSK;"
+      windows1251_content = utf8_content.encode("Windows-1251")
+      tempfile = Tempfile.new([ "test", ".csv" ])
+      tempfile.binmode
+      tempfile.write(windows1251_content)
+      tempfile.rewind
+      @temp_files << tempfile
+
+      result = CsvEncodingFixer.convert_file(tempfile.path)
+
+      assert_equal Encoding::UTF_8, result.encoding
+      assert result.valid_encoding?, "Content should be valid UTF-8"
+      assert result.include?("Дата")
+      assert result.include?("Операция")
+    end
+
+    test "convert_file class method handles CSV with semicolon separator" do
+      content = "Name;Age\nJohn;30\nJane;25"
+      tempfile = Tempfile.new([ "test", ".csv" ])
+      tempfile.write(content.encode("Windows-1251"))
+      tempfile.rewind
+      @temp_files << tempfile
+
+      result = CsvEncodingFixer.convert_file(tempfile.path)
+
+      assert result.include?("Name")
+      assert result.include?("John")
+      assert result.include?("30")
+    end
+
+
     private
 
       def create_test_csv_file(filename, content, binary: false)

@@ -38,6 +38,12 @@
           ) %>
       <% end %>
 
+      <% if account.prior_enabled? %>
+        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 rounded">
+          Priorbank
+        </span>
+      <% end %>
+
       <%= render "accounts/show/menu", account: account %>
     </div>
   </div>

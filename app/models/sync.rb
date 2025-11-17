@@ -126,6 +126,22 @@ class Sync < ApplicationRecord
     )
   end
 
+  def progress_update(step:, message:, status: "in_progress")
+    self.data ||= { "steps" => [] }
+
+    step_data = {
+      "step" => step,
+      "message" => message,
+      "status" => status,
+      "timestamp" => Time.current.iso8601
+    }
+
+    self.data["steps"] ||= []
+    self.data["steps"] << step_data
+
+    update(data: self.data)
+  end
+
   private
     def log_status_change
       Rails.logger.info("changing from #{aasm.from_state} to #{aasm.to_state} (event: #{aasm.current_event})")

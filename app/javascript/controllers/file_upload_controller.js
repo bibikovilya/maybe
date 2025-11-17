@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "fileName", "uploadArea", "uploadText"]
+  static targets = ["input", "fileName", "uploadArea", "uploadText", "preview"]
 
   connect() {
     if (this.hasInputTarget) {
@@ -52,7 +52,32 @@ export default class extends Controller {
       if (this.hasUploadTextTarget) {
         this.uploadTextTarget.classList.add("hidden")
       }
+
+      // Show image preview for single image files
+      if (fileCount === 1 && this.inputTarget.files[0].type.startsWith('image/')) {
+        this.showImagePreview(this.inputTarget.files[0])
+      }
     }
+  }
+
+  showImagePreview(file) {
+    const reader = new FileReader()
+    
+    reader.onload = (e) => {
+      // Hide all existing preview images
+      this.previewTargets.forEach(preview => {
+        preview.classList.add("hidden")
+      })
+
+      // Show the new preview in the last preview target (the one we added for new uploads)
+      if (this.hasPreviewTarget) {
+        const newPreview = this.previewTargets[this.previewTargets.length - 1]
+        newPreview.src = e.target.result
+        newPreview.classList.remove("hidden")
+      }
+    }
+    
+    reader.readAsDataURL(file)
   }
 
   formSubmitting() {

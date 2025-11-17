@@ -1,0 +1,18 @@
+<div id="<%= dom_id sync %>" class="flex items-center justify-between mx-4 py-4">
+
+  <div class="flex items-center gap-2 mb-1">
+    <%= link_to sync_path(sync), class: "text-sm text-primary hover:underline" do %>
+      <% if sync.syncable.present? %>
+        <%= sync.syncable.name + " " %>
+      <% end %>
+
+      <%= t(".label", datetime: sync.created_at.strftime("%b %-d, %Y at %l:%M %p")) %>
+    <% end %>
+
+    <%= sync_status_badge(sync) %>
+  </div>
+
+  <%= render DS::Menu.new do |menu| %>
+    <% menu.with_item(variant: "link", text: t(".view"), href: sync_path(sync), icon: "eye") %>
+  <% end %>
+</div>

@@ -14,6 +14,35 @@
   <% end %>
 
   <% unless account.linked? %>
+    <% if account.prior_enabled? %>
+      <% menu.with_item(
+        variant: "link",
+        text: "Sync Priorbank transactions",
+        href: edit_sync_account_prior_account_path(account),
+        icon: "refresh-cw",
+        data: { turbo_frame: :modal }
+      ) %>
+      <% menu.with_item(
+        variant: "button",
+        text: "Unlink Priorbank",
+        href: account_prior_account_path(account),
+        method: :delete,
+        icon: "unlink",
+        confirm: CustomConfirm.for_resource_deletion("prior account", high_severity: true),
+        data: { turbo_frame: :_top }
+      ) %>
+    <% else %>
+      <% menu.with_item(
+        variant: "link",
+        text: "Link Priorbank",
+        href: new_account_prior_account_path(account),
+        icon: "link",
+        data: { turbo_frame: :modal }
+      ) %>
+    <% end %>
+  <% end %>
+
+  <% unless account.linked? %>
     <% menu.with_item(
       variant: "button",
       text: "Delete account",
